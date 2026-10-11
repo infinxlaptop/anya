@@ -2183,7 +2183,7 @@ async function handleCommand(cmd, args, message, env, token) {
       const state = await getChatState(env, chatId);
       // Live full list first (Render nox-tagger); fallback = tracked registry + admins
       let entries = await getLiveMembers(env, chatId, false);
-      if (!entries) {
+      if (!entries || entries.length === 0) {
         const allMembers = Object.entries(state.members || {});
       try {
         const ar = await callTelegramApi(token, 'getChatAdministrators', { chat_id: chatId });

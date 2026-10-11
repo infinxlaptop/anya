@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { fileURLToPath } from 'node:url';
 import worker from './worker.js';
 import { FileKV } from './kvstore.js';
 
@@ -7,7 +8,7 @@ import { FileKV } from './kvstore.js';
 // - ctx.waitUntil -> background promise guard
 // - scheduled()  -> tiny cron ticker below
 
-const kv = new FileKV(new URL('./data/kv.json', import.meta.url));
+const kv = new FileKV(fileURLToPath(new URL('./data/kv.json', import.meta.url)));
 await kv.load();
 
 const env = {
