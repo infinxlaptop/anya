@@ -174,7 +174,7 @@ function buildHelpText(showOwnerSection) {
     "/atag <msg> - Sirf admins ko tag (Admins)\n" +
     "/gmtag - Good morning tagging (Admins)\n" +
     "/gntag - Good night tagging (Admins)\n" +
-    "/cancel - Tagging roko\n" +
+    "/stop /cancel - Tagging ya pending action roko\n" +
     "/reset — Clear chat memory\n" +
     "/settings — Show current settings\n\n" +
     "🛡 *Admin Commands* _(reply to a user's message, admins only)_\n" +
@@ -1566,7 +1566,7 @@ const KNOWN_COMMANDS = new Set([
   '/users',
   '/home',
   '/dm',
-  '/cancel',
+  '/cancel', '/stop',
   '/cancelbroadcast', '/deletebroadcast',
   '/warns', '/gban', '/gunban', '/gmute', '/gunmute',
   '/lock', '/unlock', '/dice', '/slot',
@@ -1595,11 +1595,13 @@ const PUBLIC_MENU = [
   { command: 'unwarn', description: 'Remove a warning' },
   { command: 'warns', description: 'Show warnings' },
   { command: 'pin', description: 'Pin a message' },
+  { command: 'unpin', description: 'Unpin a message' },
   { command: 'purge', description: 'Delete multiple messages' },
   { command: 'quote', description: 'Random quote' },
   { command: 'fact', description: 'Fun fact' },
   { command: 'joke', description: 'Tell a joke' },
   { command: 'flip', description: 'Flip a coin' },
+  { command: 'dice', description: 'Roll dice' },
   { command: 'compliment', description: 'Compliment someone' },
   { command: 'roast', description: 'Roast someone' },
   { command: 'horoscope', description: 'Daily horoscope' },
@@ -1608,9 +1610,11 @@ const PUBLIC_MENU = [
   { command: 'summarize', description: 'Summarize text' },
   { command: 'learn', description: 'Teach Anya facts' },
   { command: 'askpdf', description: 'Ask from a PDF/doc' },
+  { command: 'idea', description: 'Get creative ideas' },
   { command: 'goal', description: 'Set/view goals' },
   { command: 'profile', description: 'Your profile' },
   { command: 'cancel', description: 'Cancel current action' },
+  { command: 'stop', description: 'Stop active tagging' },
   { command: 'remind', description: 'Set a reminder' },
   { command: 'reminders', description: 'List your reminders' },
   { command: 'cancelremind', description: 'Cancel a reminder' },
@@ -2293,6 +2297,16 @@ async function handleCommand(cmd, args, message, env, token) {
         await sleep(2000);
       }
       try { await env.ANYA_KV.delete(`activeTag:${chatId}`); } catch {}
+      break;
+    }
+    case '/stop': {
+      const active = await env.ANYA_KV.get(`activeTag:${chatId}`);
+      if (active) {
+        try { await env.ANYA_KV.delete(`activeTag:${chatId}`); } catch {}
+        await callTelegramApi(token, 'sendMessage', { chat_id: chatId, text: '⛔ <b>Ruk gayi! Tagging process stopped.</b>', parse_mode: 'HTML', ...replyExtra });
+      } else {
+        await sendMessage(token, chatId, 'koi tagging chal hi nahi rahi 😅', replyExtra);
+      }
       break;
     }
     case '/cancel': {
