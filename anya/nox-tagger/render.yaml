@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: nox-tagger
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    envVars:
+      - key: API_ID
+      - key: API_HASH
+      - key: BOT_TOKEN
+        sync: false
+      - key: OWNER_ID
+      - key: MEMBER_API_KEY
+        sync: false
+        # Anya worker se same key share karo (Worker secrets me MEMBER_API_KEY + MEMBER_API_URL)

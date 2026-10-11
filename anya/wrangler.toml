@@ -1,0 +1,30 @@
+name = "anya"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# KV namespace: pehle ek baar chalao, jo ID mile use yaha daalo
+#   wrangler kv namespace create ANYA_KV
+#   wrangler kv namespace create ANYA_KV --preview
+[[kv_namespaces]]
+binding = "ANYA_KV"
+id = "PASTE_KV_NAMESPACE_ID_HERE"
+
+# Plain vars (secret nahi hai)
+[vars]
+MEMBER_API_URL = "https://tumhari-service.onrender.com"
+
+# Secrets (kabhi file me mat likho, ye 3 commands chalao):
+#   wrangler secret put BOT_TOKEN
+#   wrangler secret put GEMINI_API_KEY
+#   wrangler secret put MEMBER_API_KEY
+#   (MEMBER_API_KEY wahi jo Render me dala hai)
+
+# Cron triggers (dashboard me bhi dikhenge)
+[triggers]
+crons = [
+  "* * * * *",    # reminders + rss check
+  "*/5 * * * *",  # rss feed check
+  "30 1 * * *",   # subah greeting + birthday (7:00 IST)
+  "30 8 * * *",   # dopahar greeting + goals (14:00 IST)
+  "30 13 * * *",  # shaam greeting (19:00 IST)
+]
