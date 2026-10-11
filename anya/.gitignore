@@ -1,0 +1,6 @@
+node_modules/
+.dev.vars
+.wrangler/
+*.session
+*.session-journal
+nox_data.json
