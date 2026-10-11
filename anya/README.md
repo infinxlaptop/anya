@@ -5,7 +5,38 @@ tagging (`/utag` `/atag` `/gmtag` `/gntag`), reminders, notes, birthdays,
 broadcast, XP/levels. `nox-tagger/` me live member-list ke liye companion
 MTProto service hai (Render par host hoti hai).
 
-## Deploy (Cloudflare)
+## Deploy (Render — Node service)
+
+Cloudflare ki jagah Render par chalana ho to (same `worker.js`, zero change):
+
+```bash
+# Root Directory: anya
+# Build: npm install
+# Start: node server.js
+```
+
+Env vars (Render dashboard → Environment):
+
+```text
+BOT_TOKEN=...
+GEMINI_API_KEY=...
+MEMBER_API_URL=https://tumhari-nox-service.onrender.com
+MEMBER_API_KEY=... (nox wali same key)
+```
+
+Storage: `env.ANYA_KV` file me chalta hai (`./data/kv.json` — restart par file
+udni na jaye isliye Render me **Disk** add karo ya backup lete raho).
+Crons (`server.js` me ticker) reminders/greetings chalate hai.
+
+Deploy ke baad webhook Render URL par set karo:
+
+```text
+https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://tumhari-anya.onrender.com
+```
+
+UptimeRobot se dono services (anya + nox-tagger) ping karo taaki free plan soye nahi.
+
+## Deploy (Cloudflare — purana tareeka)
 
 ```bash
 npm install -g wrangler

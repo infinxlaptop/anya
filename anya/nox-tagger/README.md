@@ -32,6 +32,18 @@ Render free service 15 min idle par sota hai (bot offline). Fix:
 2. URL: tumhari Render service URL (jaise `https://nox-tagger.onrender.com`)
 3. Interval 5 min — bot me `/` health endpoint pehle se hai
 
+## 3b. NO_UPDATES mode (same token do jagah chal raha ho to)
+
+Anya (node service) aur ye bot SAME token use karte hai to polling ladegi
+(409 Conflict). Is service ko sirf `/members` API ke liye chalana ho to env me:
+
+```text
+NO_UPDATES=1
+```
+
+Is mode me Telegram polling band rehti hai (koi command jawab nahi dega),
+sirf `/` health + `/members` chalta hai. Live `/utag` isi se aata hai.
+
 ## 4. Meri taraf se kya badla (logic same hai)
 
 - Secrets file se nikal ke env vars me (security)

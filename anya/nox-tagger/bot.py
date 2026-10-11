@@ -17,7 +17,11 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 if not API_ID or not API_HASH or not BOT_TOKEN or not OWNER_ID:
     raise SystemExit("API_ID / API_HASH / BOT_TOKEN / OWNER_ID env vars missing hai - Render dashboard me set karo")
 
-app = Client("ultimate_tagger_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+app = Client("ultimate_tagger_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN,
+             no_updates=(os.environ.get("NO_UPDATES", "0") == "1"))
+# NO_UPDATES=1 matlab: Telegram polling band, sirf /members + health chalega.
+# Ye mode tab use karo jab SAME token ka main bot (Anya) kahin aur chal raha ho,
+# warna dono getUpdates ke liye ladenge (409 Conflict).
 
 # Databases (In-Memory Sets & Dicts)
 active_tags = {}
