@@ -11,8 +11,8 @@ Cloudflare ki jagah Render par chalana ho to (same `worker.js`, zero change):
 
 ```bash
 # Root Directory: anya
-# Build: npm install
-# Start: node server.js
+# Build: pip install -r nox-tagger/requirements.txt
+# Start: bash start.sh
 ```
 
 Env vars (Render dashboard → Environment):
@@ -20,9 +20,14 @@ Env vars (Render dashboard → Environment):
 ```text
 BOT_TOKEN=...
 GEMINI_API_KEY=...
-MEMBER_API_URL=https://tumhari-nox-service.onrender.com
-MEMBER_API_KEY=... (nox wali same key)
+MEMBER_API_URL=https://tumhari-anya-service.onrender.com
+MEMBER_API_KEY=... (koi lamba random secret, khud banao)
+NO_UPDATES=1
 ```
+
+Ek hi service me dono chalte hai (`start.sh`): node = Anya bot, python =
+sirf member API (`/members` andar hi proxy hota hai). Isliye free hours quota
+(750/month) me rehta hai. `MEMBER_API_URL` me **khud isi service ka URL** dalo.
 
 Storage: `env.ANYA_KV` file me chalta hai (`./data/kv.json` — restart par file
 udni na jaye isliye Render me **Disk** add karo ya backup lete raho).
@@ -34,7 +39,9 @@ Deploy ke baad webhook Render URL par set karo:
 https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://tumhari-anya.onrender.com
 ```
 
-UptimeRobot se dono services (anya + nox-tagger) ping karo taaki free plan soye nahi.
+UptimeRobot se sirf isi service ka URL ping karo (ek hi service hai ab).
+Free 750 hours/month me rehta hai (~730 lagte hai) — headroom kam hai,
+month-end par suspend ho to paid ($7) ya VPS sochna.
 
 ## Deploy (Cloudflare — purana tareeka)
 
@@ -67,13 +74,11 @@ https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://anya.tumhara.workers.
 - `GEMINI_MODEL` — model ka naam
 - Baaki limits/quota constants file ke upar CONFIG section me hai
 
-## Live member list (optional par recommended)
+## Live member list (automatic — same service me hai)
 
-Bot API poori member list nahi deta, isliye `/utag` live list `nox-tagger/`
-service se leta hai. Bina iske bot tracked IDs par gir jayega.
-
-1. `nox-tagger/README.md` padh ke Render par deploy karo
-2. Dono taraf same `MEMBER_API_KEY`, Anya me `MEMBER_API_URL` set karo
+Bot API poori member list nahi deta, isliye `/utag` live list andar chal rahe
+python (`nox-tagger/`) se leta hai. `MEMBER_API_URL` me khud isi service ka URL
+dalo. Na mile to bot tracked IDs par gir jayega (fallback automatic).
 
 ## Cron
 
@@ -85,5 +90,8 @@ Dashboard → Workers → Triggers me deploy ke baad dikhenge.
 | File | Kaam |
 | ---- | ---- |
 | `worker.js` | Poora bot (single file Worker) |
-| `wrangler.toml` | KV binding, crons, vars (ID bharna hai) |
-| `nox-tagger/` | Member-list companion service (Render) |
+| `server.js` | Node adapter — webhook + cron + member proxy |
+| `kvstore.js` | File storage (KV ki jagah) |
+| `start.sh` | Ek service me node + python dono chalata hai |
+| `wrangler.toml` | KV binding, crons, vars (Cloudflare wala tareeka) |
+| `nox-tagger/` | Member-list companion (same service me chalta hai) |

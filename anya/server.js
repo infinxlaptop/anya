@@ -34,6 +34,22 @@ const server = http.createServer(async (req, res) => {
     res.end('anya alive');
     return;
   }
+  // Same-service python (nox-tagger) proxy: Anya ka MEMBER_API_URL khud ka
+  // public URL hota hai, /members yaha se python tak jata hai. Isse doosri
+  // service ki zarurat nahi — free hours bachte hai.
+  if (req.url.startsWith('/members')) {
+    try {
+      const pyPort = Number(process.env.MEMBER_LOCAL_PORT || 8051);
+      const r = await fetch(`http://127.0.0.1:${pyPort}${req.url}`, { signal: AbortSignal.timeout(25000) });
+      res.writeHead(r.status, { 'content-type': r.headers.get('content-type') || 'application/json' });
+      res.end(Buffer.from(await r.arrayBuffer()));
+    } catch (e) {
+      console.error('member proxy failed:', e);
+      res.writeHead(502);
+      res.end('{"error":"member api down"}');
+    }
+    return;
+  }
   try {
     const chunks = [];
     for await (const c of req) chunks.push(c);
